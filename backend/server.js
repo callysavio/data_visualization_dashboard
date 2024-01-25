@@ -149,15 +149,27 @@ app.use((err, req, res, next) => {
 // Database connection
 dbConnect()
   .then(() => {
-    console.log("Database is connected".bgGreen);
+    console.log("Database is connected");
     // Start the server
     app.listen(PORT, () => {
+      
+      if (process.env.NODE_ENV !== 'production') {
       console.log(
         `Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`
           .green
       );
+    } else {
+       console.log(
+        `Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`
+      );
+    }
     });
   })
   .catch((err) => {
-    console.error(`Database error: ${err}`.magenta);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(`Database error: ${err}`.magenta);
+    } else {
+       console.error(`Database error: ${err}`);
+    }
+    
   });
