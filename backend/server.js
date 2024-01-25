@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-const dotenvResult = dotenv.config();
+ dotenv.config();
 import express from "express";
 import httpStatus from "http-status";
 import morgan from "morgan";
@@ -11,10 +11,10 @@ import { paginate } from "./utils/Pagination.js";
 import path from 'path'
 
 // loading environment variables from .env file
-if (dotenvResult.error) {
-  console.error("Error loading .env file:", dotenvResult.error);
-  process.exit(1);
-}
+// if (dotenvResult.error) {
+//   console.error("Error loading .env file:", dotenvResult.error);
+//   process.exit(1);
+// }
 
 const __dirname = path.resolve()
 
