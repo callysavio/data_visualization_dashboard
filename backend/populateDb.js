@@ -1,6 +1,6 @@
 import jsonData from './jsonData.json' assert { type: "json" };
 import DataModel from "./model/dataModel.js";
-
+//hello
 // function to insert json data into database
 const populateDatabase = async (jsonData) => {
     try {
