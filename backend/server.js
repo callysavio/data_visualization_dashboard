@@ -5,7 +5,6 @@ import httpStatus from "http-status";
 import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
-import colors from "colors";
 import { dbConnect } from "./config/db.js";
 import DataModel from "./model/dataModel.js";
 import { paginate } from "./utils/Pagination.js";
@@ -156,20 +155,12 @@ dbConnect()
       if (process.env.NODE_ENV !== 'production') {
       console.log(
         `Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`
-          .green
-      );
-    } else {
-       console.log(
-        `Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`
       );
     }
     });
   })
   .catch((err) => {
-    if (process.env.NODE_ENV !== 'production') {
       console.error(`Database error: ${err}`.magenta);
-    } else {
-       console.error(`Database error: ${err}`);
-    }
+    } 
     
-  });
+  );
