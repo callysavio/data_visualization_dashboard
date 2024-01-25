@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 const dotenvResult = dotenv.config();
 import express from "express";
 import httpStatus from "http-status";
-// import morgan from "morgan";
+import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
 import colors from "colors";
@@ -29,9 +29,9 @@ app.use(express.json());
 app.use(helmet());
 
 // Enable morgan logging in development environment
-// if (NODE_ENV !== "production") {
-//   app.use(morgan("dev"));
-// }
+if (NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 
 
 
