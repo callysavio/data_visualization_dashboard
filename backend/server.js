@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+const dotenvResult = dotenv.config();
 import express from "express";
 import httpStatus from "http-status";
 import morgan from "morgan";
@@ -11,7 +12,6 @@ import { paginate } from "./utils/Pagination.js";
 import path from 'path'
 
 // loading environment variables from .env file
-const dotenvResult = dotenv.config();
 if (dotenvResult.error) {
   console.error("Error loading .env file:", dotenvResult.error);
   process.exit(1);
@@ -29,23 +29,11 @@ app.use(express.json());
 app.use(helmet());
 
 // Enable morgan logging in development environment
-if (NODE_ENV === "production") {
+if (NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')))
-  app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend/build', 'index.html'))
-  })
-} else {
- app.get("/", (req, res) => {
-  res.status(httpStatus.OK).json({
-    status: "success",
-    message: "Welcome to the data visualization server",
-  });
-}); 
-}
+
 
 // Define a root route
 // app.get("/", (req, res) => {
@@ -134,6 +122,20 @@ app.all("*", (req, res) => {
     message: "Endpoint not found",
   });
 });
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')))
+  app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend/build', 'index.html'))
+  })
+} else {
+ app.get("/", (req, res) => {
+  res.status(httpStatus.OK).json({
+    status: "success",
+    message: "Welcome to the data visualization server",
+  });
+}); 
+}
 
 // Global error handler middleware
 app.use((err, req, res, next) => {
