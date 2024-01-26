@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { constants } from './constants';
+// import { constants } from './constants';
 
 const GlobalContext = React.createContext();
 
@@ -13,7 +13,7 @@ const ContextStore = ({ children }) => {
   const fetchData = useCallback(async (query) => {
     try {
       setLoading((prev) => ({ ...prev, loadingDashboard: true }));
-      const apiUrl = `${constants.backendBaseUrl}/api/allData?${getQueryString(query)}`;
+      const apiUrl = `/api/allData?${getQueryString(query)}`;
       console.log('API URL:', apiUrl);
       
       const response = await axios.get(apiUrl);
