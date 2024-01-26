@@ -20,6 +20,7 @@ if (NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
+const __dirname = path.resolve()
 // Serve static files from the "frontend/build" directory in production
 if (NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'frontend/build')));
