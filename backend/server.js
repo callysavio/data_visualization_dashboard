@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
- dotenv.config();
 import express from "express";
 import httpStatus from "http-status";
 import morgan from "morgan";
@@ -8,45 +7,38 @@ import helmet from "helmet";
 import { dbConnect } from "./config/db.js";
 import DataModel from "./model/dataModel.js";
 import { paginate } from "./utils/Pagination.js";
-import path from 'path'
+import path from 'path';
 
-// loading environment variables from .env file
-// if (dotenvResult.error) {
-//   console.error("Error loading .env file:", dotenvResult.error);
-//   process.exit(1);
-// }
-
-const __dirname = path.resolve()
-
-// creating the express app
 const app = express();
 const { NODE_ENV, PORT = 5000 } = process.env;
 
-// App general use
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
 
-// Enable morgan logging in development environment
 if (NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
+// Serve static files from the "frontend/build" directory in production
+if (NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+  
+  // For any route that is not an API endpoint, serve the frontend
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend/build', 'index.html'));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.status(httpStatus.OK).json({
+      status: "success",
+      message: "Welcome to the data visualization server",
+    });
+  });
+}
 
-
-// Define a root route
-// app.get("/", (req, res) => {
-//   res.status(httpStatus.OK).json({
-//     status: "success",
-//     message: "Welcome to the data visualization server",
-//   });
-// });
-
-// route to fetch all the data from databaese
 app.get("/api/allData", async (req, res) => {
-  try {
-    
-    const endYearQuery =
+  const endYearQuery =
       req.query.end_year == "undefined" || req.query.end_year == null
         ? {}
         : { end_year: req.query.end_year };
@@ -104,15 +96,10 @@ const sectorQuery =
     res.status(httpStatus.OK).json({
       message: "success",
       data: data,
+    })
     });
-  } catch (error) {
-    console.error("Error fetching all data:", error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: "Internal Server Error",
-    });
-  }
-});
+  
+
 
 // Catch all other routes and return a 404 JSON response
 app.all("*", (req, res) => {
@@ -121,20 +108,6 @@ app.all("*", (req, res) => {
     message: "Endpoint not found",
   });
 });
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')))
-  app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend/build', 'index.html'))
-  })
-} else {
- app.get("/", (req, res) => {
-  res.status(httpStatus.OK).json({
-    status: "success",
-    message: "Welcome to the data visualization server",
-  });
-}); 
-}
 
 // Global error handler middleware
 app.use((err, req, res, next) => {
@@ -151,16 +124,11 @@ dbConnect()
     console.log("Database is connected");
     // Start the server
     app.listen(PORT, () => {
-      
-      if (process.env.NODE_ENV !== 'production') {
-      console.log(
-        `Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`
-      );
-    }
+      if (NODE_ENV !== 'production') {
+        console.log(`Server is running on http://localhost:${PORT} in ${NODE_ENV} environment`);
+      }
     });
   })
   .catch((err) => {
-      console.error(`Database error: ${err}`.magenta);
-    } 
-    
-  );
+    console.error(`Database error: ${err}`);
+  });
